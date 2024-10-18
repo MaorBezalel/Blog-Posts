@@ -7,6 +7,10 @@ export const NAV_ITEMS = {
         href: '/posts',
         label: 'Posts',
     },
+    TAGS: {
+        href: '/tags',
+        label: 'Tags',
+    },
     USER: {
         href: '/user',
         label: 'User',
