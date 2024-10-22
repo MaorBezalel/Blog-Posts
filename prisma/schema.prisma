@@ -33,17 +33,17 @@ model User {
 }
 
 model Post {
-  id         String       @id @default(cuid())
-  title      String
-  slug       String       @unique // This is the URL-friendly version of the title (e.g. title: "Hello World" => slug: "hello-world")
-  content    String
-  image      String?
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  author     User         @relation(name: "WrittenPosts", fields: [authorId], references: [id], onDelete: Cascade)
-  authorId   String
-  comments   Comment[]    @relation(name: "PostComments")
-  TagOnPosts TagOnPosts[]
+  id        String        @id @default(cuid())
+  title     String
+  slug      String        @unique // This is the URL-friendly version of the title (e.g. title: "Hello World" => slug: "hello-world")
+  content   String
+  image     String?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  author    User          @relation(name: "WrittenPosts", fields: [authorId], references: [id], onDelete: Cascade)
+  authorId  String
+  comments  Comment[]     @relation(name: "PostComments")
+  tags      TagsOnPosts[]
 }
 
 model Comment {
@@ -61,12 +61,12 @@ model Comment {
 }
 
 model Tag {
-  id         String       @id @default(cuid())
-  name       String       @unique
-  TagOnPosts TagOnPosts[]
+  id    String        @id @default(cuid())
+  name  String        @unique
+  posts TagsOnPosts[]
 }
 
-model TagOnPosts {
+model TagsOnPosts {
   post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId String
   tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
