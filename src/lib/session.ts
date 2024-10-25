@@ -71,7 +71,7 @@ export const verifySession = cache(async () => {
         const payload = await decrypt(session);
         return { userId: payload.userId }; // TODO: return the role too
     } catch (error) {
-        console.error(error);
+        // console.error(error);
         return undefined;
     }
 });

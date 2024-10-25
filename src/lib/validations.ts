@@ -37,6 +37,10 @@ export const LoginFormWithEmailSchema = z.object({
 
 export const LoginFormWithUsernameSchema = z
     .object({
-        username: z.string().min(1, { message: 'Username is required' }),
+        username: z
+            .string()
+            .min(1, { message: 'Username is required' })
+            .regex(/^[a-zA-Z0-9_]+$/, { message: 'Invalid username' })
+            .regex(/[a-zA-Z]/, { message: 'Invalid username' }),
     })
     .merge(LoginFormWithEmailSchema.pick({ password: true }));

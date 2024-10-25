@@ -3,18 +3,23 @@
 import { Prisma } from '@prisma/client';
 import { z } from 'zod';
 import { SignUpFormSchema, LoginFormWithEmailSchema, LoginFormWithUsernameSchema } from '@/lib/validations';
-import { createUser } from '@/lib/dal';
+import { createUser, getUser } from '@/lib/dal';
 import { createSession } from '@/lib/session';
-import type { SignUpActionErrorState, SessionPayload } from '@/types/auth';
-import { validateSignUpForm, handlePrismaError } from '@/actions/_utils';
+import type {
+    AuthFormActionErrorState,
+    AuthFormFieldErrors,
+    LoginFormActionErrorState,
+    SessionPayload,
+    SignUpFormActionErrorState,
+} from '@/types/auth';
+import { validateSignUpForm, validateLoginForm, handlePrismaError } from '@/actions/_utils';
 
 export async function signUpAction(
-    initialState: SignUpActionErrorState | null,
+    initialState: SignUpFormActionErrorState | null,
     formData: FormData
-): Promise<SignUpActionErrorState> {
+): Promise<SignUpFormActionErrorState> {
     // 1. Validate the form data
     const validatedFields = validateSignUpForm(formData);
-
     if (!validatedFields.success) {
         return {
             type: 'error',
@@ -33,6 +38,48 @@ export async function signUpAction(
             return handlePrismaError(error);
         }
         throw error;
+    }
+
+    // 3. Sign a session token and set it as a HTTP-only cookie
+    await createSession(payload);
+
+    return {
+        type: 'success',
+        errors: null,
+    };
+}
+
+export async function login(
+    initialState: LoginFormActionErrorState | null,
+    formData: FormData
+): Promise<LoginFormActionErrorState> {
+    // 1. Validate the form data
+    const validatedFields = validateLoginForm(formData);
+    if (!validatedFields.success) {
+        return {
+            type: 'error',
+            errors: validatedFields.error.flatten().fieldErrors,
+        };
+    }
+
+    // 2. Check if the user exists and return the user's session
+    let payload: SessionPayload | null;
+    if ('email' in validatedFields.data) {
+        const { password, email } = validatedFields.data;
+        payload = await getUser(email, password, 'email');
+    } else {
+        const { password, username } = validatedFields.data;
+        payload = await getUser(username, password, 'username');
+    }
+    if (!payload) {
+        return {
+            type: 'error',
+            errors: {
+                email: ['Invalid email/username or password'],
+                username: ['Invalid email/username or password'],
+                password: ['Invalid email/username or password'],
+            },
+        };
     }
 
     // 3. Sign a session token and set it as a HTTP-only cookie
