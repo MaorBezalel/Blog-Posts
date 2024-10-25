@@ -1,20 +1,12 @@
 'use server';
 
 import { Prisma } from '@prisma/client';
-import { z } from 'zod';
-import { SignUpFormSchema, LoginFormWithEmailSchema, LoginFormWithUsernameSchema } from '@/lib/validations';
-import { createUser, getUser } from '@/lib/dal';
+import { createUser, getUser } from '@/lib/db/dal';
 import { createSession } from '@/lib/session';
-import type {
-    AuthFormActionErrorState,
-    AuthFormFieldErrors,
-    LoginFormActionErrorState,
-    SessionPayload,
-    SignUpFormActionErrorState,
-} from '@/types/auth';
+import type { LoginFormActionErrorState, UserSessionPayload, SignUpFormActionErrorState } from '@/types/auth';
 import { validateSignUpForm, validateLoginForm, handlePrismaError } from '@/actions/_utils';
 
-export async function signUpAction(
+export async function signup(
     initialState: SignUpFormActionErrorState | null,
     formData: FormData
 ): Promise<SignUpFormActionErrorState> {
@@ -29,7 +21,7 @@ export async function signUpAction(
 
     // 2. Check if the user already exists and create a new user
     const { username, email, password } = validatedFields.data;
-    let payload: SessionPayload;
+    let payload: UserSessionPayload;
     try {
         const userId = await createUser(username, email, password);
         payload = { userId, username, email };
@@ -63,7 +55,7 @@ export async function login(
     }
 
     // 2. Check if the user exists and return the user's session
-    let payload: SessionPayload | null;
+    let payload: UserSessionPayload | null;
     if ('email' in validatedFields.data) {
         const { password, email } = validatedFields.data;
         payload = await getUser(email, password, 'email');

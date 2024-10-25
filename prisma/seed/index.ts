@@ -6,7 +6,7 @@ import postsJson from './data/posts.json';
 import commentsJson from './data/comments.json';
 
 // import utils functions
-import { clearDatabase, seedTags, seedUsers, seedPosts, seedComments, seedTagsOnPosts, logger } from './utils';
+import { clearDatabase, seedTags, seedUsers, seedPosts, seedComments, seedTagsOnPosts, logger } from './_utils';
 
 const prisma = new PrismaClient();
 

@@ -17,13 +17,6 @@ export function LoginForm() {
                 placeholder={['johndoe@email.com', 'john_doe']}
                 error={[state?.errors?.email?.[0], state?.errors?.username?.[0]]}
             />
-            {/* <InputField
-                id="emailOrUsername"
-                label="Email or Username"
-                type="text"
-                name="emailOrUsername"
-                error={state?.errors?.email?.[0] || state?.errors?.username?.[0]}
-            /> */}
             <InputField
                 id="password"
                 label="Password"

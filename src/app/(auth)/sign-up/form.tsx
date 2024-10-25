@@ -1,11 +1,11 @@
 'use client';
 
 import { useActionState } from 'react';
-import { signUpAction } from '@/actions/auth';
+import { signup } from '@/actions/auth';
 import { InputField } from '@/components/ui/input-field';
 
 export function SignUpForm() {
-    const [state, action, isPending] = useActionState(signUpAction, null);
+    const [state, action, isPending] = useActionState(signup, null);
 
     return (
         <form action={action} className="flex w-[40%] flex-col gap-5">

@@ -4,8 +4,8 @@ import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 import { redirect, RedirectType } from 'next/navigation';
 import ms from 'ms';
-import { type SessionPayload } from '@/types/auth';
-import { NAV_ITEMS } from '@/constants';
+import { type UserSessionPayload } from '@/types/auth';
+import { NAV_ITEMS } from '@/utils/constants';
 import { cache } from 'react';
 
 const SECRET = new TextEncoder().encode(process.env.JWT_SECRET!);
@@ -18,7 +18,7 @@ const SESSION_TOKEN_NAME = process.env.JWT_SESSION_TOKEN_NAME!;
  * @param payload The payload to be encrypted
  * @return The encrypted session token
  */
-async function encrypt(payload: SessionPayload): Promise<string> {
+async function encrypt(payload: UserSessionPayload): Promise<string> {
     return new SignJWT(payload)
         .setProtectedHeader({ alg: 'HS256' })
         .setExpirationTime(SESSION_TOKEN_EXPIRY)
@@ -33,9 +33,9 @@ async function encrypt(payload: SessionPayload): Promise<string> {
  *
  * @throws If the token is invalid or expired
  */
-async function decrypt(token: string): Promise<SessionPayload> {
+async function decrypt(token: string): Promise<UserSessionPayload> {
     const { payload } = await jwtVerify(token, SECRET);
-    return payload as SessionPayload;
+    return payload as UserSessionPayload;
 }
 
 /**
@@ -45,7 +45,7 @@ async function decrypt(token: string): Promise<SessionPayload> {
  *
  * @remarks Should be called after the user has successfully logged in or signed up
  */
-export async function createSession(payload: SessionPayload) {
+export async function createSession(payload: UserSessionPayload) {
     const session = await encrypt(payload);
     (await cookies()).set(SESSION_TOKEN_NAME, session, {
         httpOnly: true,

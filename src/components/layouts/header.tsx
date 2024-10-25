@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-import { NAV_ITEMS } from '@/constants';
+import { NAV_ITEMS } from '@/utils/constants';
 
 export function Header() {
     const pathname = usePathname();

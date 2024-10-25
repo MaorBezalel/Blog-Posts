@@ -1,6 +1,6 @@
-import prisma from '@/lib/db';
-import { SessionPayload } from '@/types/auth';
+import prisma from '@/lib/db/_prisma';
 import bcrypt from 'bcrypt';
+import type { UserSessionPayload } from '@/types/auth';
 
 /**
  * Creates a new user in the database
@@ -40,7 +40,7 @@ export async function getUser(
     emailOrUsernameValue: string,
     password: string,
     emailOrUsernameKey: 'email' | 'username'
-): Promise<SessionPayload | null> {
+): Promise<UserSessionPayload | null> {
     const whereClause =
         emailOrUsernameKey === 'email' ? { email: emailOrUsernameValue } : { username: emailOrUsernameValue };
     const user = await prisma.user.findUnique({

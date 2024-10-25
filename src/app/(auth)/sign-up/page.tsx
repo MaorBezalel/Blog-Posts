@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { NAV_ITEMS } from '@/constants';
+import { NAV_ITEMS } from '@/utils/constants';
 import { SignUpForm } from '@/app/(auth)/sign-up/form';
 
 export default function SignUpPage() {

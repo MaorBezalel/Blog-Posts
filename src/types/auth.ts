@@ -1,14 +1,14 @@
 import z from 'zod';
 import { SignUpFormSchema, LoginFormWithEmailSchema, LoginFormWithUsernameSchema } from '@/lib/validations';
 
-export type SessionPayload = {
+export type UserSessionPayload = {
     userId: string;
     username: string;
     email: string;
 };
 
 export type UserSessionState = {
-    session: SessionPayload | null;
+    session: UserSessionPayload | null;
     removeSession: () => void;
 };
 

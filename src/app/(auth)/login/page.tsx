@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { NAV_ITEMS } from '@/constants';
+import { NAV_ITEMS } from '@/utils/constants';
 import { LoginForm } from '@/app/(auth)/login/form';
 
 export default function LoginPage() {

@@ -1,7 +1,7 @@
 import { PrismaClient, Prisma, Tag } from '@prisma/client';
 import { createId } from '@paralleldrive/cuid2';
 import bcrypt from 'bcrypt';
-import { PostJson, UserJson, CommentJson } from './types';
+import { PostJson, UserJson, CommentJson } from './_types';
 
 /**
  * Clear the database of all data

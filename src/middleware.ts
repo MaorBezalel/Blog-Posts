@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { verifySession } from '@/lib/session';
-import { PROTECTED_ROUTES, GUEST_ROUTES, NAV_ITEMS } from '@/constants';
+import { PROTECTED_ROUTES, GUEST_ROUTES, NAV_ITEMS } from '@/utils/constants';
 
 export default async function middleware(req: NextRequest) {
     const path = req.nextUrl.pathname;
