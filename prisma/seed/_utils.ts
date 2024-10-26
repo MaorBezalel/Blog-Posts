@@ -21,12 +21,11 @@ export async function clearDatabase(prisma: PrismaClient) {
  *
  * @param prisma The PrismaClient instance
  * @param posts The posts from the JSON data
- * @returns The tags that were seeded
  */
-export async function seedTags(prisma: PrismaClient, posts: PostJson[]): Promise<Tag[]> {
+export async function seedTags(prisma: PrismaClient, posts: PostJson[]) {
     const tags = posts.flatMap(post => post.tags);
     const uniqueTags = Array.from(new Set(tags));
-    return await prisma.tag.createManyAndReturn({ data: uniqueTags.map(tag => ({ name: tag })) });
+    await prisma.tag.createMany({ data: uniqueTags.map(tag => ({ name: tag })) });
 }
 
 /**
@@ -63,6 +62,8 @@ export async function seedUsers(prisma: PrismaClient, users: UserJson[]): Promis
  * @param posts The posts from the JSON data
  * @param usersNumericIdToCuid A mapping of numeric user IDs to CUIDs
  * @returns A mapping of numeric post IDs to CUIDs
+ *
+ * @remarks This is also where we connect the author (User) and tags (Tag) to each post
  */
 export async function seedPosts(
     prisma: PrismaClient,
@@ -83,6 +84,11 @@ export async function seedPosts(
             content: post.body,
             author: {
                 connect: { id: usersNumericIdToCuid[post.userId] },
+            },
+            tags: {
+                connect: post.tags.map(tag => ({
+                    name: tag,
+                })),
             },
         };
     });
@@ -114,29 +120,6 @@ export async function seedComments(
         },
     }));
     await Promise.all(commentsToSeed.map(comment => prisma.comment.create({ data: comment })));
-}
-
-/**
- * Seed the database with tags on posts
- *
- * @param prisma The PrismaClient instance
- * @param posts The posts from the JSON data
- * @param postsNumericIdToCuid A mapping of numeric post IDs to CUIDs
- * @param tags The tags that were seeded
- */
-export async function seedTagsOnPosts(
-    prisma: PrismaClient,
-    posts: PostJson[],
-    postsNumericIdToCuid: Record<number, string>,
-    tags: Tag[]
-) {
-    const tagsOnPostsToSeed = posts.flatMap(post =>
-        post.tags.map(tag => ({
-            post: { connect: { id: postsNumericIdToCuid[post.id] } },
-            tag: { connect: { id: tags.find(dbTag => dbTag.name === tag)!.id } },
-        }))
-    );
-    await Promise.all(tagsOnPostsToSeed.map(tagOnPost => prisma.tagsOnPosts.create({ data: tagOnPost })));
 }
 
 /**

@@ -6,7 +6,7 @@ import postsJson from './data/posts.json';
 import commentsJson from './data/comments.json';
 
 // import utils functions
-import { clearDatabase, seedTags, seedUsers, seedPosts, seedComments, seedTagsOnPosts, logger } from './_utils';
+import { clearDatabase, seedTags, seedUsers, seedPosts, seedComments, logger } from './_utils';
 
 const prisma = new PrismaClient();
 
@@ -18,7 +18,7 @@ async function main() {
 
     // Seed Tags
     logger(seedTags.name, 'Seeding tags...');
-    const dbTags = await seedTags(prisma, postsJson);
+    await seedTags(prisma, postsJson);
     logger(seedTags.name, 'Tags seeded!');
 
     // Seed Users
@@ -35,11 +35,6 @@ async function main() {
     logger(seedComments.name, 'Seeding comments...');
     await seedComments(prisma, commentsJson, usersNumericIdToCuid, postsNumericIdToCuid);
     logger(seedComments.name, 'Comments seeded!');
-
-    // Seed Tags on Posts
-    logger(seedTagsOnPosts.name, 'Seeding tags on posts...');
-    await seedTagsOnPosts(prisma, postsJson, postsNumericIdToCuid, dbTags);
-    logger(seedTagsOnPosts.name, 'Tags on posts seeded!');
 }
 
 main()
