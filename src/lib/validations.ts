@@ -1,3 +1,4 @@
+import { parseCommaSeparatedSearchParam } from '@/utils/helpers';
 import { z } from 'zod';
 
 export const SignUpFormSchema = z
@@ -44,3 +45,14 @@ export const LoginFormWithUsernameSchema = z
             .regex(/[a-zA-Z]/, { message: 'Invalid username' }),
     })
     .merge(LoginFormWithEmailSchema.pick({ password: true }));
+
+export const PostsPageSearchParamsSchema = z.object({
+    tags: z
+        .string()
+        .optional()
+        .transform(value => (value ? parseCommaSeparatedSearchParam(value) : undefined)),
+    page: z
+        .string()
+        .optional()
+        .transform(value => (value ? Number(value) : undefined)),
+});

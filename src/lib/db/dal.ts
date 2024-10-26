@@ -77,7 +77,11 @@ export async function getPosts(skip: number = 0, take: number = 10) {
             content: true,
             createdAt: true,
             updatedAt: true,
-            tags: true,
+            tags: {
+                select: {
+                    name: true,
+                },
+            },
         },
     });
 }
@@ -112,7 +116,11 @@ export async function getPostsByTags(tags: string[], skip: number = 0, take: num
             content: true,
             createdAt: true,
             updatedAt: true,
-            tags: true,
+            tags: {
+                select: {
+                    name: true,
+                },
+            },
         },
     });
 }
@@ -174,13 +182,22 @@ export async function getPost(slug: string) {
 }
 
 /**
- * Gets all tags from the database with an optional count of posts for each tag
+ * Gets all or paginated tags from the database with an optional count of posts for each tag
  *
- * @param [includePostCount=false] Whether to include the count of posts for each tag. Default is false.
+ * @param [includePostCount=false] Whether to include the count of posts for each tag. Default is `true`.
+ * @param [pagination] The pagination options for the query. Optional.
+ * @param pagination.lastTagName The name of the last tag in the previous query.
+ * @param pagination.take The number of tags to take.
  * @returns The tags with only their name included, and optionally the count of posts for each tag
  */
-export async function getTags(includePostCount: boolean = false) {
+export async function getTags(
+    includePostCount: boolean = true,
+    pagination?: { lastTagName: string | null; take: number }
+) {
     return prisma.tag.findMany({
+        take: pagination?.take,
+        cursor: pagination ? { name: pagination.lastTagName ?? undefined } : undefined,
+        orderBy: [{ posts: { _count: 'desc' } }, { name: 'asc' }],
         select: {
             name: true,
             _count: includePostCount ? { select: { posts: true } } : undefined,
